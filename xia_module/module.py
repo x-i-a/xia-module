@@ -4,7 +4,8 @@ import shutil
 
 
 class Module:
-    module_name = "xia-module"
+    module_name = "xia-module"  # Module Names
+    activate_depends = []  # Those modules must be activated before this module
 
     def __init__(self, source_dir: str = "", **kwargs):
         package_dir = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
