@@ -15,6 +15,7 @@ class Module:
         self.base_dir = os.path.join(package_dir, "templates", self.module_name, "base")
         self.base_file = os.path.join(self.base_dir, "main.tf")
         self.activate_file = os.path.join(self.base_dir, "activate.tf")
+        self.template_dir = os.path.join(package_dir, "templates", self.module_name, "templates")
 
     def enable(self, module_dir: str = os.path.sep.join(["iac", "modules"]),
                base_dir: str = os.path.sep.join(["iac", "environments", "base"]), **kwargs):
@@ -69,6 +70,7 @@ class Module:
     def initialize(self):
         """Initialize a module in an application
         """
+        shutil.copytree(self.template_dir, ".")
 
     def compile(self):
         """Compile a module to prepare terraform apply
