@@ -4,7 +4,7 @@ import shutil
 
 
 class Module:
-    module_name = "gcp-module"
+    module_name = "xia-module"
 
     def __init__(self, source_dir: str = "", **kwargs):
         package_dir = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
