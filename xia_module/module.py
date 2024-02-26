@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+from jinja2 import Environment, FileSystemLoader
 
 
 class Module:
@@ -15,7 +16,13 @@ class Module:
         self.base_dir = os.path.join(package_dir, "templates", self.module_name, "base")
         self.base_file = os.path.join(self.base_dir, "main.tf")
         self.activate_file = os.path.join(self.base_dir, "activate.tf")
-        self.template_dir = os.path.join(package_dir, "templates", self.module_name, "templates")
+        self.init_dir = os.path.join(package_dir, "templates", self.module_name, "init")
+        self.template_dir = os.path.join(package_dir, "templates", self.module_name, "template")
+        self.env = Environment(
+            loader=FileSystemLoader(searchpath=self.template_dir),
+            trim_blocks=True,
+            keep_trailing_newline=True
+        )
 
     def enable(self, module_dir: str = os.path.sep.join(["iac", "modules"]),
                base_dir: str = os.path.sep.join(["iac", "environments", "base"]), **kwargs):
@@ -67,10 +74,46 @@ class Module:
             shutil.copy(self.activate_file, target_file)
             print(f"Global activate file {target_file} loaded")
 
-    def initialize(self):
+    @classmethod
+    def copy_dir(cls, source_dir, target_dir, overwrite: bool = False):
+        if not os.path.exists(source_dir):
+            print("Source directory not found, skip")
+        for root, dirs, files in os.walk(source_dir):
+            # Create corresponding subdirectories in the destination directory
+            for dir_name in dirs:
+                source_subdir = os.path.join(root, dir_name)
+                target_subdir = os.path.join(target_dir, os.path.relpath(source_subdir, source_dir))
+                os.makedirs(target_subdir, exist_ok=True)
+            # Copy files to the destination directory
+            for file_name in files:
+                source_file = os.path.join(root, file_name)
+                target_file = os.path.join(target_dir, os.path.relpath(source_file, source_dir))
+                if overwrite or not os.path.exists(target_file):
+                    shutil.copy2(source_file, target_file)
+                    print(f"Copied: {source_file} -> {target_file}")
+                else:
+                    print(f"Skip existed file: {target_file}")
+
+    def _build_template(self, **kwargs):
+        """Build From template directory
+
+        Args:
+            **kwargs:
+        """
+
+    def _build_cicd(self, **kwargs):
+        """Build Pipeline files
+
+        Args:
+            **kwargs:
+        """
+
+    def initialize(self, **kwargs):
         """Initialize a module in an application
         """
-        shutil.copytree(self.template_dir, ".")
+        self.copy_dir(self.init_dir, ".", False)
+        self._build_template(**kwargs)
+        self._build_cicd(**kwargs)
 
     def compile(self):
         """Compile a module to prepare terraform apply
