@@ -1,3 +1,4 @@
+import copy
 import os
 import sys
 import shutil
@@ -112,8 +113,10 @@ class Module:
         """Initialize a module in an application
         """
         self.copy_dir(self.init_dir, ".", False)
-        self._build_template(**kwargs)
-        self._build_cicd(**kwargs)
+        template_params = copy.deepcopy(kwargs)
+        cicd_params = template_params.pop("cicd", {})
+        self._build_template(**template_params)
+        self._build_cicd(**cicd_params)
 
     def compile(self):
         """Compile a module to prepare terraform apply
