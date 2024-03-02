@@ -1,14 +1,13 @@
 name: Deploy - GCP - Repository
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [released]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: sit
+    environment: prd
     permissions:
       contents: read
       id-token: write
