@@ -32,16 +32,9 @@ runs:
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v3
 
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v2
-      with:
-        project_id: $PROJECT_ID
-        workload_identity_provider: $SECRET_WIP_NAME
-        service_account: $PROVIDER_SA_EMAIL
-
-    - name: Terraform Init
+    - name: Print
       shell: bash
       run: |
-        terraform -chdir=iac/environments/${{ inputs.env_name }} init \
-          -backend-config="bucket=${{ inputs.tf_bucket_name }}" \
-          -backend-config="prefix=${{ inputs.realm_name }}/_/${{ inputs.foundation_name }}/${{ inputs.app_name }}/${{ inputs.env_name }}/terraform/state"
+        echo $SECRET_WIP_NAME
+        echo $PROJECT_ID
+        echo $PROVIDER_SA_EMAIL
