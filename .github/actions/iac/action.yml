@@ -4,6 +4,16 @@ description: 'Encapsulated steps for Job 1'
 runs:
   using: 'composite'
   steps:
-    - name: Test
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        project_id: ${{ vars.PROJECT_ID }}
+        workload_identity_provider: ${{ vars.SECRET_WIP_NAME }}
+        service_account: ${{ vars.PROVIDER_SA_EMAIL }}
+
+    - name: Terraform Init
       shell: bash
-      run: echo "Test"
+      run: terraform -chdir=iac/environments/${{ vars.ENV_NAME }} init -backend-config="bucket=${{ vars.TF_BUCKET_NAME }}"
