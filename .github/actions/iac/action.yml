@@ -35,9 +35,9 @@ runs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        project_id: ${{ inputs.project_id }}
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.service_account }}
+        project_id: ${{ env.PROJECT_ID }}
+        workload_identity_provider: ${{ env.SECRET_WIP_NAME }}
+        service_account: ${{ env.PROVIDER_SA_EMAIL }}
 
     - name: Terraform Init
       shell: bash
