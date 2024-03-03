@@ -19,8 +19,8 @@ jobs:
       - name: Deploy Infrastructure
         uses: ./.github/actions/iac
         with:
-          cosmos_name: ${{ vars.COSMOS_NAME }}
           realm_name: ${{ vars.REALM_NAME }}
+          foundation_name: ${{ vars.FOUNDATION_NAME }}
           app_name: ${{ vars.APP_NAME }}
           env_name: ${{ vars.ENV_NAME }}
           project_id: ${{ vars.PROJECT_ID }}

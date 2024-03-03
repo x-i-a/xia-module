@@ -1,11 +1,11 @@
 name: 'Apply Terraform'
 description: 'Apply Terraform Using Google OIDC'
 inputs:
-  cosmos_name:
-    description: 'Cosmos Name'
-    required: true
   realm_name:
     description: 'Realm name'
+    required: true
+  foundation_name:
+    description: 'Foundation name'
     required: true
   app_name:
     description: 'Application name'
