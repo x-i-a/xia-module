@@ -1,5 +1,21 @@
-name: 'Job 1 Action'
-description: 'Encapsulated steps for Job 1'
+name: 'Apply Terraform'
+description: 'Apply Terraform Using Google OIDC'
+inputs:
+  env_name:
+    description: 'Environment Name'
+    required: true
+  project_id:
+    description: 'Project ID'
+    required: true
+  workload_identity_provider:
+    description: 'Workload Identity Provider Name'
+    required: true
+  service_account:
+    description: 'Related Service Account Name'
+    required: true
+  tf_bucket_name:
+    description: 'State terraform bucket name'
+    required: true
 
 runs:
   using: 'composite'
@@ -10,10 +26,10 @@ runs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        project_id: ${{ vars.PROJECT_ID }}
-        workload_identity_provider: ${{ vars.SECRET_WIP_NAME }}
-        service_account: ${{ vars.PROVIDER_SA_EMAIL }}
+        project_id: ${{ inputs.PROJECT_ID }}
+        workload_identity_provider: ${{ inputs.SECRET_WIP_NAME }}
+        service_account: ${{ inputs.PROVIDER_SA_EMAIL }}
 
     - name: Terraform Init
       shell: bash
-      run: terraform -chdir=iac/environments/${{ vars.ENV_NAME }} init -backend-config="bucket=${{ vars.TF_BUCKET_NAME }}"
+      run: terraform -chdir=iac/environments/${{ inputs.ENV_NAME }} init -backend-config="bucket=${{ inputs.TF_BUCKET_NAME }}"

@@ -18,3 +18,9 @@ jobs:
 
       - name: Deploy Infrastructure
         uses: ./.github/actions/iac
+        with:
+          env_name: ${{ vars.ENV_NAME }}
+          project_id: ${{ vars.PROJECT_ID }}
+          workload_identity_provider: ${{ vars.SECRET_WIP_NAME }}
+          service_account: ${{ vars.PROVIDER_SA_EMAIL }}
+          tf_bucket_name: ${{ vars.TF_BUCKET_NAME }}
