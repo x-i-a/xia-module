@@ -30,6 +30,3 @@ runs:
         workload_identity_provider: ${{ inputs.SECRET_WIP_NAME }}
         service_account: ${{ inputs.PROVIDER_SA_EMAIL }}
 
-    - name: Terraform Init
-      shell: bash
-      run: terraform -chdir=iac/environments/${{ inputs.ENV_NAME }} init -backend-config="bucket=${{ inputs.TF_BUCKET_NAME }}"
