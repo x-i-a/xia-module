@@ -4,9 +4,6 @@ description: 'Encapsulated steps for Job 1'
 runs:
   using: 'composite'
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
     - name: Install Python
       uses: actions/setup-python@v5
       with:
