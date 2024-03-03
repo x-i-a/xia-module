@@ -35,6 +35,6 @@ runs:
     - name: Print
       shell: bash
       run: |
-        echo "SECRET_WIP_NAME: $SECRET_WIP_NAME"
-        echo "PROJECT_ID: $PROJECT_ID"
-        echo "PROVIDER_SA_EMAIL: $PROVIDER_SA_EMAIL"
+        echo "SECRET_WIP_NAME: ${{ vars.SECRET_WIP_NAME }}"
+        echo "PROJECT_ID: ${{ vars.PROJECT_ID }}"
+        echo "PROVIDER_SA_EMAIL: ${{ vars.PROVIDER_SA_EMAIL }}"
