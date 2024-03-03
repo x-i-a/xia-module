@@ -1,0 +1,9 @@
+name: 'Job 1 Action'
+description: 'Encapsulated steps for Job 1'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Test
+      shell: bash
+      run: echo "Test"
