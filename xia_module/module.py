@@ -108,6 +108,11 @@ class Module:
         Args:
             **kwargs:
         """
+        # Step 1: Need build environments
+        if "github" in kwargs:
+            github_config = kwargs["github"]
+
+
 
     def initialize(self, **kwargs):
         """Initialize a module in an application
