@@ -26,7 +26,10 @@ runs:
     - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v2
       with:
-        project_id: ${{ inputs.PROJECT_ID }}
-        workload_identity_provider: ${{ inputs.SECRET_WIP_NAME }}
-        service_account: ${{ inputs.PROVIDER_SA_EMAIL }}
+        project_id: ${{ inputs.project_id }}
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.service_account }}
 
+    - name: Terraform Init
+      shell: bash
+      run: terraform -chdir=iac/environments/${{ inputs.env_name }} init -backend-config="bucket=${{ inputs.tf_bucket_name }}"
