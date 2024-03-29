@@ -2,7 +2,9 @@ import copy
 import os
 import sys
 import shutil
+import yaml
 from jinja2 import Environment, FileSystemLoader
+from xia_module.cicd.github import GitHubWorkflow
 
 
 class Module:
@@ -19,6 +21,7 @@ class Module:
         self.activate_file = os.path.join(self.base_dir, "activate.tf")
         self.init_dir = os.path.join(package_dir, "templates", self.module_name, "init")
         self.template_dir = os.path.join(package_dir, "templates", self.module_name, "template")
+        self.cicd_dir = os.path.join(package_dir, "templates", self.module_name, "cicd")
         self.env = Environment(
             loader=FileSystemLoader(searchpath=self.template_dir),
             trim_blocks=True,
@@ -102,17 +105,95 @@ class Module:
             **kwargs:
         """
 
+    @classmethod
+    def _regex_to_github_actions(cls, pattern: str):
+        tag_dict = {".*": ["*"]}
+        actions_config = {'on': {'push': {}}}
+
+        if pattern == ".*":
+            return {'on': {'push': {"branches": "**", "tags": "*"}}}
+
+        if pattern.startswith("refs/tags/"):
+            tag_pattern = pattern.replace("refs/tags/", "")
+            actions_config['on']['push']['tags'] = tag_dict[tag_pattern]
+        elif pattern.startswith("refs/heads/"):
+            branch_pattern = pattern.replace("refs/heads/", "")
+            if branch_pattern == ".*":
+                actions_config['on']['push']['branches'] = ["**"]
+            elif branch_pattern.startswith("(") and branch_pattern.endswith(")"):
+                branch_pattern = branch_pattern[1:-1]
+                actions_config['on']['push']['branches'] = branch_pattern.split("|")
+        return actions_config
+
+    def _upsert_cicd_github_global(self, env_name: str, **kwargs) -> dict:
+        """Generate CICD
+
+        Args:
+            env_name:
+            **kwargs:
+
+        Returns:
+            workflow yaml in dict
+        """
+        workflow_yaml = os.path.join(".", ".github", "workflows", f"workflows-{env_name}.yml")
+        if os.path.exists(workflow_yaml):
+            # Case 1: If exists, return the existed one
+            with open(workflow_yaml, 'r') as file:
+                return yaml.safe_load(file) or {}
+        else:
+            # Case 2: If not exists, create a new one
+            os.makedirs(os.path.join(".", ".github", "workflows"), exist_ok=True)
+            match_branch = kwargs.get("match_branch", "push")
+            match_event = kwargs.get("match_event", "push")
+            if match_event == "release":
+                trigger_event = {"release": None}
+            elif match_event == "push":
+                trigger_cfg = self._regex_to_github_actions(match_branch)
+                trigger_event = trigger_cfg.get("on", None)
+            else:
+                raise ValueError(f"{match_event} doesn't exist")
+            workflow_config = {
+                "name": f"Workflow - {env_name}",
+                "on": trigger_event
+            }
+
+            with open(workflow_yaml, 'w') as file:
+                yaml.dump(workflow_config, file, default_flow_style=False, sort_keys=False)
+
+    def _build_cicd_github(self, env_name: str, stages: list, **kwargs):
+
+        workflow_yaml = os.path.join(self.cicd_dir, "github", "workflows.yml")
+        if os.path.exists(workflow_yaml):
+            with open(workflow_yaml, 'r') as file:
+                workflow_config = yaml.safe_load(file) or {}
+            workflow_jobs = workflow_config.get("jobs", {})
+            for stage in stages:
+                if stage in workflow_jobs:
+                    # Need to integrate current job
+                    workflow_yaml = self._upsert_cicd_github_global(env_name, **kwargs)
+            for stage_name, stage_config in workflow_config.get("jobs", {}).items():
+                print(workflow_config["jobs"])
+                print(kwargs)
+
     def _build_cicd(self, **kwargs):
         """Build Pipeline files
 
         Args:
             **kwargs:
         """
-        # Step 1: Need build environments
-        if "github" in kwargs:
-            github_config = kwargs["github"]
-
-
+        # Step 1: Get information
+        landscape_yaml = os.path.join(".", "config", "landscape.yaml")
+        with open(landscape_yaml, 'r') as file:
+            landscape_config = yaml.safe_load(file) or {}
+        # Step 2: Need build environments
+        for env_name, env_config in landscape_config.get("environments", {}).items():
+            if "github" in kwargs:
+                github_config = kwargs["github"] or {}
+                cicd_config = env_config
+                env_config["env_name"] = env_name
+                cicd_config.update(github_config)
+                if cicd_config.get("stages", []):
+                    self._build_cicd_github(**cicd_config)
 
     def initialize(self, **kwargs):
         """Initialize a module in an application
