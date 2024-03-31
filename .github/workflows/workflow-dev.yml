@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy:
+    if: false
     runs-on: ubuntu-latest
     environment: dev
     permissions:
@@ -15,15 +16,3 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Deploy Infrastructure
-        uses: ./.github/actions/iac
-        with:
-          realm_name: ${{ vars.REALM_NAME }}
-          foundation_name: ${{ vars.FOUNDATION_NAME }}
-          app_name: ${{ vars.APP_NAME }}
-          env_name: ${{ vars.ENV_NAME }}
-          project_id: ${{ vars.PROJECT_ID }}
-          workload_identity_provider: ${{ vars.SECRET_WIP_NAME }}
-          service_account: ${{ vars.PROVIDER_SA_EMAIL }}
-          tf_bucket_name: ${{ vars.TF_BUCKET_NAME }}
