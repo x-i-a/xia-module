@@ -28,5 +28,5 @@ jobs:
           python setup.py sdist bdist_wheel
           CHECK_VERSION=$(ls dist/*-${GITHUB_REF#refs/tags/}*.tar.gz)
 
-      - name: Publish PYPI
-        uses: ./.github/actions/module-pypi/publish
+      - name: Publish release distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
