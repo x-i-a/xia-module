@@ -179,7 +179,8 @@ class Module:
         for env_name, env_config in landscape_config.get("environments", {}).items():
             if cicd_engine == "github":
                 gh_action_filename = f".github/workflows/workflow-{env_name}.yml"
-                gh_action = GitHubWorkflow(gh_action_filename, workflow_name="", env_name="dev", env_params=env_config)
+                gh_action = GitHubWorkflow(gh_action_filename, workflow_name="",
+                                           env_name=env_name, env_params=env_config)
                 module_gh_action_fn = os.path.join(self.cicd_dir, "github", "workflow.yml")
                 if os.path.exists(module_gh_action_fn):
                     module_action = GitHubWorkflow(module_gh_action_fn)
