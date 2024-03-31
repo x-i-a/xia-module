@@ -53,6 +53,7 @@ class GitHubWorkflow:
             workflow_name = workflow_name if workflow_name else f"Workflow - {env_name}"
             match_event = env_params.get("match_event", "push")
             match_branch = env_params.get("match_branch", ".*")
+            runs_on = env_params.get("runs_on", "ubuntu-latest")
             if match_event == "release":
                 trigger_event = {"release": None}
             else:
@@ -66,7 +67,10 @@ class GitHubWorkflow:
             last_stage = ""
             for stage_name in env_params.get("stages", []):
                 self.data["jobs"].update(self.yaml.map(**{stage_name: self.yaml.map(**{
-                    "if": True, "environment": "env_name", "steps": self.yaml.seq([
+                    "if": True,
+                    "environment": env_name,
+                    "runs-on": runs_on,
+                    "steps": self.yaml.seq([
                         self.yaml.map(id="checkout-code", uses="actions/checkout@v4")
                     ])
                 })}))
@@ -104,6 +108,7 @@ class GitHubWorkflow:
         empty_stages = [name for name, cfg in self.data["jobs"].items() if len(cfg["steps"]) <= 1]
         for empty_stage in empty_stages:
             self.data["jobs"][empty_stage]["if"] = False
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         with open(self.filename, "w") as fp:
             self.yaml.dump(self.data, fp)
 

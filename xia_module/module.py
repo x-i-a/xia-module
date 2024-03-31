@@ -160,21 +160,6 @@ class Module:
             with open(workflow_yaml, 'w') as file:
                 yaml.dump(workflow_config, file, default_flow_style=False, sort_keys=False)
 
-    def _build_cicd_github(self, env_name: str, stages: list, **kwargs):
-
-        workflow_yaml = os.path.join(self.cicd_dir, "github", "workflows.yml")
-        if os.path.exists(workflow_yaml):
-            with open(workflow_yaml, 'r') as file:
-                workflow_config = yaml.safe_load(file) or {}
-            workflow_jobs = workflow_config.get("jobs", {})
-            for stage in stages:
-                if stage in workflow_jobs:
-                    # Need to integrate current job
-                    workflow_yaml = self._upsert_cicd_github_global(env_name, **kwargs)
-            for stage_name, stage_config in workflow_config.get("jobs", {}).items():
-                print(workflow_config["jobs"])
-                print(kwargs)
-
     def _build_cicd(self, **kwargs):
         """Build Pipeline files
 
@@ -186,14 +171,17 @@ class Module:
         with open(landscape_yaml, 'r') as file:
             landscape_config = yaml.safe_load(file) or {}
         # Step 2: Need build environments
+        cicd_engine = landscape_config.get("cicd", "github")
         for env_name, env_config in landscape_config.get("environments", {}).items():
-            if "github" in kwargs:
-                github_config = kwargs["github"] or {}
-                cicd_config = env_config
-                env_config["env_name"] = env_name
-                cicd_config.update(github_config)
-                if cicd_config.get("stages", []):
-                    self._build_cicd_github(**cicd_config)
+            if cicd_engine == "github":
+                gh_action_filename = f".github/workflows/workflow-{env_name}.yml"
+                gh_action = GitHubWorkflow(gh_action_filename, workflow_name="", env_name="dev", env_params=env_config)
+                module_gh_action_fn = os.path.join(self.cicd_dir, "github", "workflow.yml")
+                if os.path.exists(module_gh_action_fn):
+                    module_action = GitHubWorkflow(module_gh_action_fn)
+                    for stage_name in env_config.get("stages", []):
+                        gh_action.merge_stage(stage_name=stage_name, workflow=module_action)
+                    gh_action.dump()
 
     def initialize(self, **kwargs):
         """Initialize a module in an application
