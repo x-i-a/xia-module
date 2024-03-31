@@ -170,8 +170,12 @@ class Module:
         landscape_yaml = os.path.join(".", "config", "landscape.yaml")
         with open(landscape_yaml, 'r') as file:
             landscape_config = yaml.safe_load(file) or {}
-        # Step 2: Need build environments
         cicd_engine = landscape_config.get("cicd", "github")
+        # Step 2: Copy Action Files
+        source_action_dir = os.path.join(self.cicd_dir, "github", "actions")
+        target_action_dir = f".github/actions/{self.module_name}"
+        self.copy_dir(source_action_dir, target_action_dir)
+        # Step 3: Need build environments
         for env_name, env_config in landscape_config.get("environments", {}).items():
             if cicd_engine == "github":
                 gh_action_filename = f".github/workflows/workflow-{env_name}.yml"
