@@ -131,8 +131,13 @@ class GitHubWorkflow:
             to_merge_stage_job.pop(existed_key, None)
         current_steps = current_stage_job.pop("steps", self.yaml.seq())
         to_merge_steps = self.yaml.seq([step for step in to_merge_steps if step.get("id", "") not in existed_step_ids])
-        current_index = len(current_steps)
         current_steps.extend(to_merge_steps)
         self.data["jobs"][stage_name].update(to_merge_stage_job)
         self.data["jobs"][stage_name]["steps"] = current_steps
-        self.data["jobs"][stage_name]["steps"].yaml_set_comment_before_after_key(current_index, before="\n")
+        # Add an empty line
+        if to_merge_steps:
+            stage_names = list(self.data["jobs"])
+            current_stage_index = stage_names.index(stage_name)
+            if stage_name != stage_names[-1]:
+                next_stage_name = stage_names[current_stage_index + 1]
+                self.data["jobs"].yaml_set_comment_before_after_key(next_stage_name, before="\n")
