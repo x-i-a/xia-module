@@ -10,6 +10,7 @@ from xia_module.cicd.github import GitHubWorkflow
 class Module:
     module_name = "xia-module"  # Module Names
     activate_depends = []  # Those modules must be activated before this module
+    deploy_depends = []  # Those modules must be deployed before this module
 
     def __init__(self, source_dir: str = "", **kwargs):
         package_dir = os.path.dirname(os.path.abspath(sys.modules[self.__class__.__module__].__file__))
