@@ -78,6 +78,10 @@ class GitHubWorkflow:
                     self.data["jobs"].yaml_set_comment_before_after_key(stage_name, before="\n")
                     self.data["jobs"][stage_name]["needs"] = last_stage
                 last_stage = stage_name
+            # Reload the generated file to get better format
+            self.dump()
+            with open(filename) as fp:
+                self.data = self.yaml.load(fp)
 
     @classmethod
     def _regex_to_github_actions(cls, pattern: str):
@@ -105,9 +109,8 @@ class GitHubWorkflow:
         """Dump final workflow to files
 
         """
-        empty_stages = [name for name, cfg in self.data["jobs"].items() if len(cfg["steps"]) <= 1]
-        for empty_stage in empty_stages:
-            self.data["jobs"][empty_stage]["if"] = False
+        for stage_name, stage_config in self.data["jobs"].items():
+            self.data["jobs"][stage_name]["if"] = False if len(stage_config.get("steps", [])) <= 1 else True
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         with open(self.filename, "w") as fp:
             self.yaml.dump(self.data, fp)
