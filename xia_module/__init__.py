@@ -1,5 +1,9 @@
 from xia_module.module import Module
 
+modules = {
+    "xia_module": Module
+}
+
 __all__ = [
     "Module"
 ]
