@@ -2,6 +2,7 @@ import copy
 import os
 import sys
 import shutil
+import subprocess
 import yaml
 from jinja2 import Environment, FileSystemLoader
 from xia_module.cicd.github import GitHubWorkflow
@@ -28,6 +29,13 @@ class Module:
             trim_blocks=True,
             keep_trailing_newline=True
         )
+
+    @classmethod
+    def git_add(cls, filename: str):
+        if os.path.exists(filename):
+            subprocess.run(['git', 'add', filename], check=True)
+        else:
+            raise ValueError(f"{filename} doesn't exist, cannot add to Git")
 
     def enable(self, module_dir: str = os.path.sep.join(["iac", "modules"]),
                base_dir: str = os.path.sep.join(["iac", "environments", "base"]), **kwargs):
@@ -80,7 +88,7 @@ class Module:
             print(f"Global activate file {target_file} loaded")
 
     @classmethod
-    def copy_dir(cls, source_dir, target_dir, overwrite: bool = False):
+    def copy_dir(cls, source_dir, target_dir, overwrite: bool = False, git_add: bool = False):
         if not os.path.exists(source_dir):
             print("Source directory not found, skip")
         for root, dirs, files in os.walk(source_dir):
@@ -95,6 +103,8 @@ class Module:
                 target_file = os.path.join(target_dir, os.path.relpath(source_file, source_dir))
                 if overwrite or not os.path.exists(target_file):
                     shutil.copy2(source_file, target_file)
+                    if git_add:
+                        cls.git_add(target_file)
                     print(f"Copied: {source_file} -> {target_file}")
                 else:
                     print(f"Skip existed file: {target_file}")
@@ -188,6 +198,7 @@ class Module:
                     for stage_name in env_config.get("stages", []):
                         gh_action.merge_stage(stage_name=stage_name, workflow=module_action)
                     gh_action.dump()
+                    self.git_add(gh_action_filename)
 
     def initialize(self, **kwargs):
         """Initialize a module in an application
