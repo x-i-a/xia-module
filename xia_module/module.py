@@ -185,7 +185,7 @@ class Module:
         # Step 2: Copy Action Files
         source_action_dir = os.path.join(self.cicd_dir, "github", "actions")
         target_action_dir = f".github/actions/{self.module_name}"
-        self.copy_dir(source_action_dir, target_action_dir)
+        self.copy_dir(source_action_dir, target_action_dir, git_add=True)
         # Step 3: Need build environments
         for env_name, env_config in landscape_config.get("environments", {}).items():
             if cicd_engine == "github":
@@ -203,7 +203,7 @@ class Module:
     def initialize(self, **kwargs):
         """Initialize a module in an application
         """
-        self.copy_dir(self.init_dir, ".", False)
+        self.copy_dir(self.init_dir, ".", overwrite=False, git_add=True)
         template_params = copy.deepcopy(kwargs)
         cicd_params = template_params.pop("cicd", {})
         self._build_template(**template_params)
