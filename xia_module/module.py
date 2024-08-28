@@ -218,7 +218,7 @@ class Module:
         config_params = template_params.pop("config", {})
         self._build_template(**template_params)
         self._build_cicd(**cicd_params)
-        self._build_cicd(**cicd_params)
+        self._build_config(**config_params)
         print("init configuration")
 
     def compile(self):
