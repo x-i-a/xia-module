@@ -68,8 +68,8 @@ class GitHubWorkflow:
             for stage_name in env_params.get("stages", []):
                 stage_header = {
                     "if": True,
-                    "runs-on": runs_on,
                     "environment": env_name,
+                    "runs-on": runs_on,
                     "steps": self.yaml.seq([
                         self.yaml.map(id="checkout-code", uses="actions/checkout@v4")
                     ])
