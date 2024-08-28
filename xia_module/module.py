@@ -219,7 +219,6 @@ class Module:
         self._build_template(**template_params)
         self._build_cicd(**cicd_params)
         self._build_config(**config_params)
-        print("init configuration")
 
     def compile(self):
         """Compile a module to prepare terraform apply
