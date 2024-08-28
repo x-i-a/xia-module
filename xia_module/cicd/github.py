@@ -66,14 +66,16 @@ class GitHubWorkflow:
 
             last_stage = ""
             for stage_name in env_params.get("stages", []):
-                self.data["jobs"].update(self.yaml.map(**{stage_name: self.yaml.map(**{
+                stage_header = {
                     "if": True,
-                    "environment": env_name,
                     "runs-on": runs_on,
                     "steps": self.yaml.seq([
                         self.yaml.map(id="checkout-code", uses="actions/checkout@v4")
                     ])
-                })}))
+                }
+                if env_name:
+                    stage_header["environment"] = env_name
+                self.data["jobs"].update(self.yaml.map(**{stage_name: self.yaml.map(**stage_header)}))
                 if last_stage != "":  # Not the first stage
                     self.data["jobs"].yaml_set_comment_before_after_key(stage_name, before="\n")
                     self.data["jobs"][stage_name]["needs"] = last_stage
