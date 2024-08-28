@@ -190,7 +190,7 @@ class Module:
         landscape_yaml = os.path.join(".", "config", "landscape.yaml")
         with open(landscape_yaml, 'r') as file:
             landscape_config = yaml.safe_load(file) or {}
-        cicd_engine = landscape_config.get("cicd", "github")
+        cicd_engine = landscape_config.get("cicd", landscape_config.get("git", "github"))
         # Step 2: Copy Action Files
         source_action_dir = os.path.join(self.cicd_dir, "github", "actions")
         target_action_dir = f".github/actions/{self.module_name}"
