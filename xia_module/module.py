@@ -24,6 +24,7 @@ class Module:
         self.init_dir = os.path.join(package_dir, "templates", self.module_name, "init")
         self.template_dir = os.path.join(package_dir, "templates", self.module_name, "template")
         self.cicd_dir = os.path.join(package_dir, "templates", self.module_name, "cicd")
+        self.config_dir = os.path.join(package_dir, "templates", self.module_name, "config")
         self.env = Environment(
             loader=FileSystemLoader(searchpath=self.template_dir),
             trim_blocks=True,
@@ -116,6 +117,14 @@ class Module:
             **kwargs:
         """
 
+    def _build_config(self, **kwargs):
+        """Build From config directory
+
+        Args:
+            **kwargs:
+        """
+        self.copy_dir(self.config_dir, "./config", overwrite=False, git_add=True)
+
     @classmethod
     def _regex_to_github_actions(cls, pattern: str):
         tag_dict = {".*": ["*"]}
@@ -206,7 +215,9 @@ class Module:
         self.copy_dir(self.init_dir, ".", overwrite=False, git_add=True)
         template_params = copy.deepcopy(kwargs)
         cicd_params = template_params.pop("cicd", {})
+        config_params = template_params.pop("config", {})
         self._build_template(**template_params)
+        self._build_cicd(**cicd_params)
         self._build_cicd(**cicd_params)
         print("init configuration")
 
