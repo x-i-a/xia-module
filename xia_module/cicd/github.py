@@ -69,12 +69,13 @@ class GitHubWorkflow:
                 stage_header = {
                     "if": True,
                     "runs-on": runs_on,
+                    "environment": env_name,
                     "steps": self.yaml.seq([
                         self.yaml.map(id="checkout-code", uses="actions/checkout@v4")
                     ])
                 }
-                if env_name:
-                    stage_header["environment"] = env_name
+                if not env_name:
+                    stage_header.pop("environment")
                 self.data["jobs"].update(self.yaml.map(**{stage_name: self.yaml.map(**stage_header)}))
                 if last_stage != "":  # Not the first stage
                     self.data["jobs"].yaml_set_comment_before_after_key(stage_name, before="\n")
