@@ -50,7 +50,8 @@ class GitHubWorkflow:
             return
         else:
             env_params = env_params or {}
-            workflow_name = workflow_name if workflow_name else f"Workflow - {env_name}"
+            default_workflow_name = f"Workflow - {env_name}" if env_name else "Workflow"
+            workflow_name = workflow_name if workflow_name else default_workflow_name
             match_event = env_params.get("match_event", "push")
             match_branch = env_params.get("match_branch", ".*")
             runs_on = env_params.get("runs_on", "ubuntu-latest")
