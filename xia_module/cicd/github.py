@@ -4,9 +4,6 @@ from ruamel.yaml import YAML
 
 
 class GitHubWorkflow:
-    """Handle Single GitHub Workflow"""
-    stages = ["test-local", "build", "deploy", "test-remote", "publish"]
-
     def load_data(self, data):
         buffer = io.StringIO()
         self.yaml.dump(data, buffer)

@@ -10,6 +10,7 @@ from xia_module.cicd.github import GitHubWorkflow
 
 class Module:
     module_name = "xia-module"  # Module Names
+    cicd_stages = ["test-local", "build", "deploy", "test-remote", "publish"]
     activate_depends = []  # Those modules must be activated before this module
     deploy_depends = []  # Those modules must be deployed before this module
 
@@ -196,7 +197,7 @@ class Module:
         target_action_dir = f".github/actions/{self.module_name}"
         self.copy_dir(source_action_dir, target_action_dir, git_add=True)
         # Step 3: Need build environments
-        default_env_config = {"base": {"stages": ["deploy", "local-test", "local-test", "publish"]}}
+        default_env_config = {"base": {"match_branch": "refs/tags/.*"}, "stages": self.cicd_stages}
         for env_name, env_config in landscape_config.get("environments", default_env_config).items():
             if cicd_engine == "github":
                 gh_action_filename = f".github/workflows/workflow-{env_name}.yml"
