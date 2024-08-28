@@ -50,7 +50,7 @@ class GitHubWorkflow:
             return
         else:
             env_params = env_params or {}
-            default_workflow_name = f"Workflow - {env_name}" if env_name else "Workflow"
+            default_workflow_name = "Workflow" if not env_name or env_name == "base" else f"Workflow - {env_name}"
             workflow_name = workflow_name if workflow_name else default_workflow_name
             match_event = env_params.get("match_event", "push")
             match_branch = env_params.get("match_branch", ".*")
@@ -75,7 +75,7 @@ class GitHubWorkflow:
                         self.yaml.map(id="checkout-code", uses="actions/checkout@v4")
                     ])
                 }
-                if not env_name:
+                if not env_name or env_name == "base":
                     stage_header.pop("environment")
                 self.data["jobs"].update(self.yaml.map(**{stage_name: self.yaml.map(**stage_header)}))
                 if last_stage != "":  # Not the first stage
