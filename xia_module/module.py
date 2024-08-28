@@ -196,7 +196,8 @@ class Module:
         target_action_dir = f".github/actions/{self.module_name}"
         self.copy_dir(source_action_dir, target_action_dir, git_add=True)
         # Step 3: Need build environments
-        for env_name, env_config in landscape_config.get("environments", {}).items():
+        default_env_config = {"base": {"stages": ["deploy", "local-test", "local-test", "publish"]}}
+        for env_name, env_config in landscape_config.get("environments", default_env_config).items():
             if cicd_engine == "github":
                 gh_action_filename = f".github/workflows/workflow-{env_name}.yml"
                 gh_action = GitHubWorkflow(gh_action_filename, workflow_name="",
