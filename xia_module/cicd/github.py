@@ -53,7 +53,7 @@ class GitHubWorkflow:
             match_branch = env_params.get("match_branch", ".*")
             runs_on = env_params.get("runs_on", "ubuntu-latest")
             if match_event == "release":
-                trigger_event = {"release": None}
+                trigger_event = {"release": {"types": "published"}}
             else:
                 trigger_cfg = self._regex_to_github_actions(match_branch)
                 trigger_event = trigger_cfg.get("on", None)
