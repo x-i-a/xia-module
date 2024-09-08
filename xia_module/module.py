@@ -33,7 +33,7 @@ class Module:
         )
 
     def get_config_file_path(self):
-        print()
+        return
 
     def init_config(self, repo_dict: dict = None, var_dict: dict = None, **kwargs):
         """Initialization of configuration file
@@ -48,7 +48,7 @@ class Module:
             with open(main_module_file) as fp:
                 for line in fp.readlines():
                     if line.strip().startswith("config_file"):
-                        print(line)
+                        print(line.strip().split("../../../")[-1][:-1])
         # print(f"init-config for {self.__class__.__name__} with {kwargs}")
 
     @classmethod
