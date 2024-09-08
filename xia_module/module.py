@@ -38,7 +38,7 @@ class Module:
         Args:
             **kwargs: Parameter to be used for configuration file changes
         """
-        print(f"init-config for {self.__class__.__name__}")
+        print(f"init-config for {self.__class__.__name__} with {kwargs}")
 
     @classmethod
     def git_add(cls, filename: str):
