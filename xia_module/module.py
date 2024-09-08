@@ -35,6 +35,7 @@ class Module:
     def get_config_file_path(self):
         config_file, config_dir = None, None
         main_module_file = f"./iac/environments/base/{self.module_name}.tf"
+        print(main_module_file)
         if os.path.exists(main_module_file):
             with open(main_module_file) as fp:
                 for line in fp.readlines():
