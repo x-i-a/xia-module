@@ -32,13 +32,17 @@ class Module:
             keep_trailing_newline=True
         )
 
-    def init_config(self, **kwargs):
+    def init_config(self, repo_dict: dict = None, var_dict: dict = None, **kwargs):
         """Initialization of configuration file
 
         Args:
+            repo_dict (dict): Repository Information
+            var_dict (dict): Repository Variable Dictionary
             **kwargs: Parameter to be used for configuration file changes
         """
-        print(f"init-config for {self.__class__.__name__} with {kwargs}")
+        with open("./config/landscape.yaml") as fp:
+            print(fp.readlines())
+        # print(f"init-config for {self.__class__.__name__} with {kwargs}")
 
     @classmethod
     def git_add(cls, filename: str):
