@@ -110,8 +110,9 @@ class GitHubWorkflow:
         """Dump final workflow to files
 
         """
-        for stage_name, stage_config in self.data["jobs"].items():
-            self.data["jobs"][stage_name]["if"] = False if len(stage_config.get("steps", [])) <= 1 else True
+        # Rethink: Might still need run empty stages if stage is configured in environments
+        # for stage_name, stage_config in self.data["jobs"].items():
+        #     self.data["jobs"][stage_name]["if"] = False if len(stage_config.get("steps", [])) <= 1 else True
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
         with open(self.filename, "w") as fp:
             self.yaml.dump(self.data, fp)
