@@ -52,8 +52,6 @@ class Module:
             var_dict (dict): Repository Variable Dictionary
             **kwargs: Parameter to be used for configuration file changes
         """
-        config_file, config_dir = self.get_config_file_path()
-        print(config_file, config_dir)
 
     @classmethod
     def git_add(cls, filename: str):
