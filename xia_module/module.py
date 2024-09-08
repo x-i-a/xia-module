@@ -40,7 +40,7 @@ class Module:
             var_dict (dict): Repository Variable Dictionary
             **kwargs: Parameter to be used for configuration file changes
         """
-        main_module_file = f"./iac/environments/base/{self.module_name}"
+        main_module_file = f"./iac/environments/base/{self.module_name}.tf"
         if os.path.exists(main_module_file):
             with open(main_module_file) as fp:
                 print(fp.readlines())
