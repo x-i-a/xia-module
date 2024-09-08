@@ -33,7 +33,16 @@ class Module:
         )
 
     def get_config_file_path(self):
-        return
+        config_file, config_dir = None, None
+        main_module_file = f"./iac/environments/base/{self.module_name}.tf"
+        if os.path.exists(main_module_file):
+            with open(main_module_file) as fp:
+                for line in fp.readlines():
+                    if line.strip().startswith("config_file"):
+                        config_file = "./" + line.strip().split("../../../")[-1][:-1]
+                    elif line.strip().startswith("config_dir"):
+                        config_dir = "./" + line.strip().split("../../../")[-1][:-1]
+        return config_file, config_dir
 
     def init_config(self, repo_dict: dict = None, var_dict: dict = None, **kwargs):
         """Initialization of configuration file
@@ -43,13 +52,8 @@ class Module:
             var_dict (dict): Repository Variable Dictionary
             **kwargs: Parameter to be used for configuration file changes
         """
-        main_module_file = f"./iac/environments/base/{self.module_name}.tf"
-        if os.path.exists(main_module_file):
-            with open(main_module_file) as fp:
-                for line in fp.readlines():
-                    if line.strip().startswith("config_file"):
-                        print(line.strip().split("../../../")[-1][:-1])
-        # print(f"init-config for {self.__class__.__name__} with {kwargs}")
+        config_file, config_dir = self.get_config_file_path()
+        print(config_file, config_dir)
 
     @classmethod
     def git_add(cls, filename: str):
