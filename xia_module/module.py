@@ -32,6 +32,14 @@ class Module:
             keep_trailing_newline=True
         )
 
+    def init_config(self, **kwargs):
+        """Initialization of configuration file
+
+        Args:
+            **kwargs: Parameter to be used for configuration file changes
+        """
+        print(f"init-config for {self.__class__.__name__}")
+
     @classmethod
     def git_add(cls, filename: str):
         if os.path.exists(filename):
