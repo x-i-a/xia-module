@@ -40,8 +40,10 @@ class Module:
             var_dict (dict): Repository Variable Dictionary
             **kwargs: Parameter to be used for configuration file changes
         """
-        with open("./config/landscape.yaml") as fp:
-            print(fp.readlines())
+        main_module_file = f"./iac/environments/base/{self.module_name}"
+        if os.path.exists(main_module_file):
+            with open(main_module_file) as fp:
+                print(fp.readlines())
         # print(f"init-config for {self.__class__.__name__} with {kwargs}")
 
     @classmethod
