@@ -167,7 +167,7 @@ class Module:
             match_branch = kwargs.get("match_branch", "push")
             match_event = kwargs.get("match_event", "push")
             if match_event == "release":
-                trigger_event = {"release": None}
+                trigger_event = {"release": {"types": "published"}}
             elif match_event == "push":
                 trigger_cfg = self._regex_to_github_actions(match_branch)
                 trigger_event = trigger_cfg.get("on", None)
